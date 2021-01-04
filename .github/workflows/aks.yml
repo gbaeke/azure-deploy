@@ -31,6 +31,7 @@ jobs:
         with:
           azcliversion: 2.16.0
           inlineScript: |
+            jq
             export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
             az aks get-credentials -g rg-gitops-demo -n clu-gitops --admin
             msi="$(az aks show -n clu-gitops -g rg-gitops-demo | jq .identityProfile.kubeletidentity.objectId -r)"
