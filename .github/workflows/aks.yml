@@ -26,16 +26,11 @@ jobs:
         with:
           version: 'v1.18.8'
 
-      - name: Azure CLI script
-        uses: azure/CLI@v1
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        with:
-          azcliversion: 2.16.0
-          inlineScript: |
-            export GITHUB_TOKEN=$GH_TOKEN
-            az aks get-credentials -g rg-gitops-demo -n clu-gitops --admin
-            msi="$(az aks show -n clu-gitops -g rg-gitops-demo | jq .identityProfile.kubeletidentity.objectId -r)"
-            az keyvault set-policy --name gebakv --object-id $msi --secret-permissions get
-            curl -s https://toolkit.fluxcd.io/install.sh | bash
-            flux bootstrap github --owner=gbaeke --repository=k8s-bootstrap --branch=main --path=demo-cluster --personal
+      - name: Flux bootstrap
+        run: |
+          export GITHUB_TOKEN=${{ secrets.GH_TOKEN }}
+          az aks get-credentials -g rg-gitops-demo -n clu-gitops --admin
+          msi="$(az aks show -n clu-gitops -g rg-gitops-demo | jq .identityProfile.kubeletidentity.objectId -r)"
+          az keyvault set-policy --name gebakv --object-id $msi --secret-permissions get
+          curl -s https://toolkit.fluxcd.io/install.sh | bash
+          flux bootstrap github --owner=gbaeke --repository=k8s-bootstrap --branch=main --path=demo-cluster --personal
