@@ -14,3 +14,10 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ secrets.SUBSCRIPTION_ID }}
+          resourceGroupName: rg-gitops-demo
+          template: ./aks/deploy.json
+          parameters: ./aks/deployparams.json
