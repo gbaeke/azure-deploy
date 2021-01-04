@@ -29,11 +29,11 @@ jobs:
       - name: Azure CLI script
         uses: azure/CLI@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
           azcliversion: 2.16.0
           inlineScript: |
-            echo $GITHUB_TOKEN
+            export GITHUB_TOKEN=$GHTOKEN
             az aks get-credentials -g rg-gitops-demo -n clu-gitops --admin
             msi="$(az aks show -n clu-gitops -g rg-gitops-demo | jq .identityProfile.kubeletidentity.objectId -r)"
             az keyvault set-policy --name gebakv --object-id $msi --secret-permissions get
