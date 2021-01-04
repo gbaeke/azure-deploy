@@ -1,0 +1,39 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "ipName": {
+        "type": "string",
+        "defaultValue": "aks-demo-ip",
+        "metadata": {
+            "description": "name of the public ip resource"
+          }
+    }
+            
+    },
+    "variables": {
+    },
+    "resources": [
+      {
+        "name": "[parameters('ipName')]",
+        "type": "Microsoft.Network/publicIPAddresses",
+        "apiVersion": "2019-09-01",
+        "location": "[resourceGroup().location]",
+        "tags": {},
+        "sku": {
+          "name": "Standard"
+        },
+        "properties": {
+          "publicIPAllocationMethod": "Static",
+          "publicIPAddressVersion": "IPv4"
+        }
+      }
+                       
+    ],
+    "outputs": { 
+        "ipaddress": {
+            "type": "string",
+            "value": "[reference(concat('Microsoft.Network/publicIPAddresses/', parameters('ipName')), '2017-10-01').ipAddress]"
+        }
+     }
+  }

@@ -1,0 +1,176 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "clusterName": {
+        "type": "string",
+        "metadata": {
+          "description": "Name of the cluster e.g. prd-kub"
+        }
+      },
+      "kubernetesVersion": {
+        "type": "string",
+        "metadata": {
+          "description": "Version number of Kubernetes e.g. 1.8.7"
+        }
+      },
+      "environment": {
+        "type": "string",
+        "metadata": {
+          "description": "Environment for the cluster e.g. production"
+        }
+      },
+      "dnsPrefix": {
+        "type": "string",
+        "metadata": {
+          "description": "DNS prefix for the cluster e.g. prd"
+        }
+      },
+      "poolName": {
+        "type": "string",
+        "metadata": {
+          "description": "Name of server pool for the cluster e.g. prdpool"
+        }
+      },
+      "nodeCount": {
+        "type": "int",
+        "metadata": {
+          "description": "Number of nodes"
+        }        
+      },
+      "vnet": {
+        "type": "string",
+        "metadata": {
+          "description": "VNet name"
+        }        
+      }
+
+    },
+    "variables": {},
+    "resources": [
+      {
+          "name": "[parameters('vnet')]",
+          "type": "Microsoft.Network/virtualNetworks",
+          "apiVersion": "2018-08-01",
+          "location": "[resourceGroup().location]",
+          "tags": {
+              "displayName": "[parameters('vnet')]"
+          },
+          "properties": {
+              "addressSpace": {
+                  "addressPrefixes": [
+                      "10.0.0.0/16"
+                  ]
+              },
+              "subnets": [
+                  {
+                      "name": "aks",
+                      "properties": {
+                          "addressPrefix": "10.0.0.0/24"
+                      }
+                  },{
+                      "name": "AzureFirewallSubnet",
+                      "properties": {
+                          "addressPrefix": "10.0.2.0/24"
+                      }
+                  }
+                ]
+          }
+      },      
+      {
+        "type": "Microsoft.OperationalInsights/workspaces",
+        "name": "[parameters('clusterName')]",
+        "apiVersion": "2017-03-15-preview",
+        "location": "[resourceGroup().location]",
+        "properties": {
+          "sku": {
+            "Name": "Standalone"
+          },
+          "features": {
+            "searchVersion": 1
+          }
+        },
+        "resources": [
+          {
+            "name": "[concat('ContainerInsights', '(',parameters('clusterName'),')')]",
+            "type": "Microsoft.OperationsManagement/solutions",
+            "apiVersion": "2015-11-01-preview",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+              "[concat('Microsoft.OperationalInsights/workspaces/', parameters('clusterName'))]"
+            ],
+            "plan": {
+              "name": "[concat('ContainerInsights', '(',parameters('clusterName'),')')]",
+              "product": "[concat('OMSGallery/', 'ContainerInsights')]",
+              "publisher": "Microsoft",
+              "promotionCode": ""
+            },
+            "properties": {
+              "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces/',parameters('clusterName'))]"
+            }
+          }
+        ]
+      },
+      {
+        "name": "[parameters('clusterName')]",
+        "type": "Microsoft.ContainerService/managedClusters",
+        "apiVersion": "2020-09-01",
+        "location": "[resourceGroup().location]",
+        "identity": {
+          "type": "SystemAssigned"
+        },
+        "tags": {
+          "environment": "[parameters('environment')]"
+        },
+        "dependsOn": [
+          "[concat('Microsoft.OperationalInsights/workspaces/', parameters('clusterName'))]"
+        ],
+        "properties": {
+          "kubernetesVersion": "[parameters('kubernetesVersion')]",
+          "dnsPrefix": "[parameters('dnsPrefix')]",
+          "agentPoolProfiles": [
+            {
+              "name": "[parameters('poolName')]",
+              "mode": "System",
+              "count": "[parameters('nodeCount')]",
+              "vmSize": "Standard_DS3_v2",
+              "dnsPrefix": "[parameters('poolName')]",
+              "type":"VirtualMachineScaleSets",
+              "scaleSetEvictionPolicy": "Delete",
+              "minCount": "[parameters('nodeCount')]",
+              "maxCount": 5,
+              "enableAutoScaling": true,
+              "osDiskType": "Ephemeral",
+              "vnetSubnetID": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnet'), 'aks')]"
+            }
+          ],
+          "linuxProfile": {
+            "adminUsername": "cluadmin",
+            "ssh": {
+              "publicKeys": [
+                {
+                  "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC3VjzfskyBxohOmvkI+lmAVB1cdMiXzKH3Gb541NUVeezwRgekIhYv+JyKn+/04xPi7ByX8rSZna3ouM/1u6ydbtIYR5hMoKSkAF58V/y1QBzStRwvba93Ugpuu2FXEpI1tY5ZMCS9Tu9ZD7h4Yb1POX1dEFUhLLbOX9dDFk/YCFdN/Vd+e27w6ii6xbOPS0g7tb0zGsvmLuC0qLzsNnKedtvF7UHLnMDNZqQEmCrYbp123/2RoRSHPISbYZBkXv5WmQg5lGsnHenbrNwubdCelymQeTKwJxqVdRhZt08SOTkDVnUJ8c5H99Qp7fe+FxW+2aSWnXZd3sPlXvcQ85qR"
+                }
+              ]
+            }
+          },
+          "addonProfiles": {
+            "omsagent": {
+              "enabled": true,
+              "config": {
+                "logAnalyticsWorkspaceResourceID": "[resourceId('Microsoft.OperationalInsights/workspaces/',parameters('clusterName'))]"
+              }
+            }
+          },
+          "enableRBAC": true,
+          "networkProfile": {
+            "networkPlugin": "azure",
+            "loadBalancerSku":"standard",
+            "serviceCidr": "10.1.0.0/16",
+            "dnsServiceIP": "10.1.0.10"
+          }
+        }
+      }
+    ],
+    "outputs": {}
+  }
