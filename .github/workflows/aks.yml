@@ -4,6 +4,14 @@ name: deploy
 on:
   repository_dispatch
 
+env:
+  CLUSTER_NAME: clu-gitops
+  RESOURCE_GROUP: rg-gitops-demo
+  KEYVAULT: gebakv
+  GITHUB_OWNER: gbaeke
+  REPO: k8s-bootstrap
+
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -26,11 +34,16 @@ jobs:
         with:
           version: 'v1.18.8'
 
+      - uses: azure/aks-set-context@v1
+        with:
+          creds: '${{ secrets.AZURE_CREDENTIALS }}'
+          cluster-name: ${{ env.CLUSTER_NAME }}
+          resource-group: ${{ env.RESOURCE_GROUP }}
+
       - name: Flux bootstrap
         run: |
           export GITHUB_TOKEN=${{ secrets.GH_TOKEN }}
-          az aks get-credentials -g rg-gitops-demo -n clu-gitops --admin
-          msi="$(az aks show -n clu-gitops -g rg-gitops-demo --query identityProfile.kubeletidentity.objectId -o tsv)"
-          az keyvault set-policy --name gebakv --object-id $msi --secret-permissions get
+          msi="$(az aks show -n ${{ env.CLUSTER_NAME }} -g ${{ env.RESOURCE_GROUP }} --query identityProfile.kubeletidentity.objectId -o tsv)"
+          az keyvault set-policy --name ${{ env.KEYVAULT }} --object-id $msi --secret-permissions get
           curl -s https://toolkit.fluxcd.io/install.sh | bash
-          flux bootstrap github --owner=gbaeke --repository=k8s-bootstrap --branch=main --path=demo-cluster --personal
+          flux bootstrap github --owner=${{ env.GITHUB_OWNER }} --repository=${{ env.REPO }} --branch=main --path=demo-cluster --personal
