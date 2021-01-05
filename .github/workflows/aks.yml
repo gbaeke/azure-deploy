@@ -4,6 +4,8 @@ name: deploy
 on:
   repository_dispatch:
     types: [deploy]
+  workflow_dispatch:
+    
 
 env:
   CLUSTER_NAME: clu-gitops
