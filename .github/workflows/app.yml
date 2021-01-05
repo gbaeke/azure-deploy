@@ -41,5 +41,6 @@ jobs:
           strategy: canary
           percentage: 20
           traffic-split-method: smi
+          baseline-and-canary-replicas: 1
           
           
