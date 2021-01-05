@@ -2,7 +2,8 @@
 name: deploy
 
 on:
-  repository_dispatch
+  repository_dispatch:
+    types: [deploy]
 
 env:
   CLUSTER_NAME: clu-gitops

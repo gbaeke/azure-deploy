@@ -1,7 +1,8 @@
 name: deployapp
 
 on:
-  repository_dispatch
+  repository_dispatch:
+    types: [deployapp]
 
 env:
   CLUSTER_NAME: clu-gitops
