@@ -37,8 +37,7 @@ jobs:
           namespace: go-template
           manifests: 
             ./deploy/deployment.yaml
-          images: |
-            ghcr.io/gbaeke/go-template:${{ env.IMAGE_TAG }}
+          images: ${{ steps.bake.outputs.manifestsBundle }}
           strategy: canary
           percentage: 20
           traffic-split-method: smi
