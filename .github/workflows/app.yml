@@ -6,7 +6,7 @@ on:
 env:
   CLUSTER_NAME: clu-gitops
   RESOURCE_GROUP: rg-gitops-demo
-  IMAGE_TAG: 0.0.2
+  IMAGE_TAG: 0.0.1
 
 jobs:
   deployapp:
