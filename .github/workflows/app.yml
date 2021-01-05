@@ -1,0 +1,43 @@
+name: deployapp
+
+on:
+  repository_dispatch
+
+env:
+  CLUSTER_NAME: clu-gitops
+  RESOURCE_GROUP: rg-gitops-demo
+  IMAGE_TAG: 0.0.2
+
+jobs:
+  deployapp:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: azure/aks-set-context@v1
+        with:
+          creds: '${{ secrets.AZURE_CREDENTIALS }}'
+          cluster-name: ${{ env.CLUSTER_NAME }}
+          resource-group: ${{ env.RESOURCE_GROUP }}
+
+      - uses: azure/container-scan@v0
+        with:
+          image-name: ghcr.io/gbaeke/go-template:${{ env.IMAGE_TAG }}
+          run-quality-checks: true
+
+      - uses: azure/k8s-bake@v1
+        with:
+          renderEngine: kustomize
+          kustomizationPath: ./deploy/
+        id: bake
+
+      - uses: azure/k8s-deploy@v1
+        with:
+          manifests: ${{ steps.bake.outputs.manifestsBundle }}
+          images: |
+            ghcr.io/gbaeke/go-template:${{ env.IMAGE_TAG }}
+          strategy: canary
+          percentage: 20
+          
+          
