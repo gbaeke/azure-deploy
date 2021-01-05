@@ -1,7 +1,12 @@
 name: deployapp
 
 on:
-  repository_dispatch
+  repository_dispatch:
+    inputs:
+      test:
+        description: 'Just a test'
+        required: true
+        default: 'test'
 
 env:
   CLUSTER_NAME: clu-gitops
