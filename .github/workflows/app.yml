@@ -1,7 +1,7 @@
 name: deployapp
 
 on:
-  repository_dispatch:
+  workflow_dispatch:
     inputs:
       test:
         description: 'Just a test'
