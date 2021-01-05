@@ -1,7 +1,7 @@
 name: deployapp
 
 on:
-  workflow_dispatch
+  repository_dispatch
 
 env:
   CLUSTER_NAME: clu-gitops
