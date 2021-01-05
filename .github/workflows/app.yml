@@ -1,7 +1,7 @@
 name: deployapp
 
 on:
-  repository_dispatch
+  workflow_dispatch
 
 env:
   CLUSTER_NAME: clu-gitops
@@ -35,9 +35,9 @@ jobs:
       - uses: azure/k8s-deploy@v1
         with:
           namespace: go-template
-          manifests: 
-            ./deploy/deployment.yaml
-          images: ${{ steps.bake.outputs.manifestsBundle }}
+          manifests: ${{ steps.bake.outputs.manifestsBundle }}
+          images: |
+            ghcr.io/gbaeke/go-template:${{ env.IMAGE_TAG }}
           strategy: canary
           percentage: 20
           traffic-split-method: smi
