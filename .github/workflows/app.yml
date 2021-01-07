@@ -34,7 +34,7 @@ jobs:
           kustomizationPath: ./deploy/
         id: bake
 
-      - uses: azure/k8s-deploy@v1.4
+      - uses: azure/k8s-deploy@v1.3
         with:
           namespace: go-template
           manifests: ${{ steps.bake.outputs.manifestsBundle }}
