@@ -41,7 +41,6 @@ jobs:
           images: |
             ghcr.io/gbaeke/go-template:${{ env.IMAGE_TAG }}
           strategy: canary
-          percentage: 20
           traffic-split-method: smi
           baseline-and-canary-replicas: 1
           
