@@ -37,7 +37,11 @@ jobs:
       - uses: azure/k8s-deploy@v1.3
         with:
           namespace: go-template
-          manifests: ${{ steps.bake.outputs.manifestsBundle }}
+          #manifests: ${{ steps.bake.outputs.manifestsBundle }}
+          manifests: |
+            ./deploy/namespace.yaml
+            ./deploy/deployment.yaml
+            ./deploy/service.yaml
           images: |
             ghcr.io/gbaeke/go-template:${{ env.IMAGE_TAG }}
           strategy: canary
