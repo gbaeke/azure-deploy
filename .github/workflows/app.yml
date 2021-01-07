@@ -8,7 +8,7 @@ on:
 env:
   CLUSTER_NAME: clu-gitops
   RESOURCE_GROUP: rg-gitops-demo
-  IMAGE_TAG: 0.0.2
+  IMAGE_TAG: 0.0.1
 
 jobs:
   deployapp:
@@ -47,6 +47,6 @@ jobs:
           strategy: canary
           traffic-split-method: smi
           percentage: 20
-          #baseline-and-canary-replicas: 2
+          baseline-and-canary-replicas: 5
           
           
