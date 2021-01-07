@@ -42,6 +42,6 @@ jobs:
             ghcr.io/gbaeke/go-template:${{ env.IMAGE_TAG }}
           strategy: canary
           traffic-split-method: smi
-          baseline-and-canary-replicas: 1
+          #baseline-and-canary-replicas: 1
           
           
