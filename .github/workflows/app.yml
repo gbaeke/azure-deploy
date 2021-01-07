@@ -8,7 +8,7 @@ on:
 env:
   CLUSTER_NAME: clu-gitops
   RESOURCE_GROUP: rg-gitops-demo
-  IMAGE_TAG: 0.0.1
+  IMAGE_TAG: 0.0.2
 
 jobs:
   deployapp:
@@ -40,9 +40,9 @@ jobs:
           manifests: ${{ steps.bake.outputs.manifestsBundle }}
           images: |
             ghcr.io/gbaeke/go-template:${{ env.IMAGE_TAG }}
-          #strategy: canary
-          #percentage: 20
-          #traffic-split-method: smi
-          #baseline-and-canary-replicas: 1
+          strategy: canary
+          percentage: 20
+          traffic-split-method: smi
+          baseline-and-canary-replicas: 1
           
           
