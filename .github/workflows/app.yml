@@ -8,7 +8,7 @@ on:
 env:
   CLUSTER_NAME: clu-gitops
   RESOURCE_GROUP: rg-gitops-demo
-  IMAGE_TAG: 0.0.2
+  IMAGE_TAG: 0.0.1
 
 jobs:
   deployapp:
@@ -37,17 +37,13 @@ jobs:
       - uses: azure/k8s-deploy@v1.4
         with:
           namespace: go-template
-          #manifests: ${{ steps.bake.outputs.manifestsBundle }}
-          manifests: |
-            ./deploy/namespace.yaml
-            ./deploy/deployment.yaml
-            ./deploy/service.yaml
+          manifests: ${{ steps.bake.outputs.manifestsBundle }}
           images: |
             ghcr.io/gbaeke/go-template:${{ env.IMAGE_TAG }}
           strategy: canary
           traffic-split-method: smi
-          action: deploy
+          action: deploy  #deploy is the default; we will later use this to promote/reject
           percentage: 20
-          baseline-and-canary-replicas: 5
+          baseline-and-canary-replicas: 2
           
           
