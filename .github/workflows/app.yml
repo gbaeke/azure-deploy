@@ -69,7 +69,7 @@ jobs:
           resource-group: ${{ env.RESOURCE_GROUP }}
 
       - uses: azure/k8s-deploy@v1.4
-        if: ${{ success }}
+        if: ${{ success() }}
         with:
           namespace: go-template
           manifests: |
@@ -84,7 +84,7 @@ jobs:
           baseline-and-canary-replicas: 2
 
       - uses: azure/k8s-deploy@v1.4
-        if: ${{ failure }}
+        if: ${{ failure() }}
         with:
           namespace: go-template
           manifests: |
