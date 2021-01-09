@@ -37,9 +37,14 @@ jobs:
       - uses: azure/k8s-deploy@v1.4
         with:
           namespace: go-template
-          #manifests: ${{ steps.bake.outputs.manifestsBundle }}
           manifests: |
             ./deploy/namespace.yaml
+
+      - uses: azure/k8s-deploy@v1.4
+        with:
+          namespace: go-template
+          #manifests: ${{ steps.bake.outputs.manifestsBundle }}
+          manifests: |
             ./deploy/service.yaml
             ./deploy/deployment.yaml
           images: |
