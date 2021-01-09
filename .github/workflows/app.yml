@@ -51,7 +51,7 @@ jobs:
             ghcr.io/gbaeke/go-template:${{ env.IMAGE_TAG }}
           strategy: canary
           traffic-split-method: smi
-          action: deploy  #deploy is the default; we will later use this to promote/reject
+          action: promote  #deploy is the default; we will later use this to promote/reject
           percentage: 20
           baseline-and-canary-replicas: 2
           
