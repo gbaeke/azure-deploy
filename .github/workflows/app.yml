@@ -54,5 +54,46 @@ jobs:
           action: deploy  #deploy is the default; we will later use this to promote/reject
           percentage: 20
           baseline-and-canary-replicas: 2
-          
-          
+
+  approveapp:
+    runs-on: ubuntu-latest
+    needs: deployapp
+    environment: akspromotion
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: azure/aks-set-context@v1
+        with:
+          creds: '${{ secrets.AZURE_CREDENTIALS }}'
+          cluster-name: ${{ env.CLUSTER_NAME }}
+          resource-group: ${{ env.RESOURCE_GROUP }
+
+      - uses: azure/k8s-deploy@v1.4
+        if: ${{ success }}
+        with:
+          namespace: go-template
+          manifests: |
+            ./deploy/service.yaml
+            ./deploy/deployment.yaml
+          images: |
+            ghcr.io/gbaeke/go-template:${{ env.IMAGE_TAG }}
+          strategy: canary
+          traffic-split-method: smi
+          action: approve  #deploy is the default; we will later use this to promote/reject
+          percentage: 20
+          baseline-and-canary-replicas: 2
+
+      - uses: azure/k8s-deploy@v1.4
+        if: ${{ failure }}
+        with:
+          namespace: go-template
+          manifests: |
+            ./deploy/service.yaml
+            ./deploy/deployment.yaml
+          images: |
+            ghcr.io/gbaeke/go-template:${{ env.IMAGE_TAG }}
+          strategy: canary
+          traffic-split-method: smi
+          action: reject  #deploy is the default; we will later use this to promote/reject
+          percentage: 20
+          baseline-and-canary-replicas: 2
