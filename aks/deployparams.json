@@ -6,7 +6,7 @@
             "value": "1.18.8"
         },
         "nodeCount": {
-            "value": 2
+            "value": 3
         },
         "clusterName": {
             "value": "clu-gitops"
