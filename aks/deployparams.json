@@ -22,6 +22,9 @@
         },
         "vnet": {
             "value": "vnet-aksgitops"
+        },
+        "groupId": {
+            "value": "3d652653-d3fa-4855-b8fe-468e2be3bb50"
         }
 
 }}

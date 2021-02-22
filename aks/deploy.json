@@ -43,6 +43,12 @@
         "metadata": {
           "description": "VNet name"
         }        
+      },
+      "groupId": {
+        "type": "string",
+        "metadata": {
+          "description": "Managed AAD Group oject Id"
+        }
       }
 
     },
@@ -114,7 +120,7 @@
       {
         "name": "[parameters('clusterName')]",
         "type": "Microsoft.ContainerService/managedClusters",
-        "apiVersion": "2020-09-01",
+        "apiVersion": "2020-12-01",
         "location": "[resourceGroup().location]",
         "identity": {
           "type": "SystemAssigned"
@@ -168,6 +174,12 @@
             "loadBalancerSku":"standard",
             "serviceCidr": "10.1.0.0/16",
             "dnsServiceIP": "10.1.0.10"
+          },
+          "aadProfile": {
+            "managed": true,
+            "adminGroupObjectIDs": [
+              "[parameters('groupId')]"
+            ]
           }
         }
       }
