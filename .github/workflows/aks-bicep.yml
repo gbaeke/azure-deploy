@@ -31,4 +31,5 @@ jobs:
         with:
           azcliversion: 2.20.0
           inlineScript: |
-            az version
+            # Azure CLI 2.20 can deploy *.bicep files with az deployment group create
+            az deployment group create -f ./bicep/deploy.bicep -g ${{ env.RESOURCE_GROUP }} --parameters ./bicep/deployparams.json
