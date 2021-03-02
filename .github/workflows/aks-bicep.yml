@@ -36,3 +36,28 @@ jobs:
         run: |
           shopt -s globstar
           ls -altR **/deploy*.*
+      
+      - uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ secrets.SUBSCRIPTION_ID }}
+          resourceGroupName: rg-gitops-demo
+          template: ./bicep/deploy.json
+          parameters: ./bicep/deployparams.json
+
+      - uses: azure/setup-kubectl@v1
+        with:
+          version: 'v1.18.8'
+
+      - uses: azure/aks-set-context@v1
+        with:
+          creds: '${{ secrets.AZURE_CREDENTIALS }}'
+          cluster-name: ${{ env.CLUSTER_NAME }}
+          resource-group: ${{ env.RESOURCE_GROUP }}
+
+      - name: Flux bootstrap
+        run: |
+          export GITHUB_TOKEN=${{ secrets.GH_TOKEN }}
+          msi="$(az aks show -n ${{ env.CLUSTER_NAME }} -g ${{ env.RESOURCE_GROUP }} --query identityProfile.kubeletidentity.objectId -o tsv)"
+          az keyvault set-policy --name ${{ env.KEYVAULT }} --object-id $msi --secret-permissions get
+          curl -s https://toolkit.fluxcd.io/install.sh | bash
+          flux bootstrap github --owner=${{ env.GITHUB_OWNER }} --repository=${{ env.REPO }} --branch=main --path=demo-cluster --personal
