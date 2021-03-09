@@ -38,6 +38,7 @@
           "description": "Number of nodes"
         }        
       },
+      
       "vnet": {
         "type": "string",
         "metadata": {
@@ -167,6 +168,9 @@
                 "logAnalyticsWorkspaceResourceID": "[resourceId('Microsoft.OperationalInsights/workspaces/',parameters('clusterName'))]"
               }
             }
+          },
+          "podIdentityProfile": {
+            "enabled": true
           },
           "enableRBAC": true,
           "networkProfile": {
