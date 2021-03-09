@@ -170,7 +170,16 @@
             }
           },
           "podIdentityProfile": {
-            "enabled": true
+            "enabled": true,
+            "userAssignedIdentityExceptions": [
+              {
+                "name": "pod-identity-exception-akv2k8s",
+                "namespace": "akv2k8s",
+                "podLabels": {
+                  "app.kubernetes.io/name": "akv2k8s"
+                }
+              }
+            ]
           },
           "enableRBAC": true,
           "networkProfile": {
