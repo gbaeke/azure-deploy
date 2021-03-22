@@ -173,6 +173,7 @@
               "config": {
                   "version": "v2"
               }
+            }
           },
           "podIdentityProfile": {
             "enabled": true,
