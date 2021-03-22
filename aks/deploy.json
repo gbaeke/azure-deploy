@@ -167,7 +167,12 @@
               "config": {
                 "logAnalyticsWorkspaceResourceID": "[resourceId('Microsoft.OperationalInsights/workspaces/',parameters('clusterName'))]"
               }
-            }
+            },
+            "azurepolicy": {
+              "enabled": true,
+              "config": {
+                  "version": "v2"
+              }
           },
           "podIdentityProfile": {
             "enabled": true,
