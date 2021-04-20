@@ -1,0 +1,14 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"k8sVersion": {
+			"value": "1.18.14"
+		},
+		"adminGroupObjectIDs": {
+			"value": [
+				"3d652653-d3fa-4855-b8fe-468e2be3bb50"
+			]
+		}
+	}
+  }
