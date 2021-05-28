@@ -48,5 +48,5 @@ jobs:
           export GITHUB_TOKEN=${{ secrets.GH_TOKEN }}
           msi="$(az aks show -n ${{ env.CLUSTER_NAME }} -g ${{ env.RESOURCE_GROUP }} --query identityProfile.kubeletidentity.objectId -o tsv)"
           az keyvault set-policy --name ${{ env.KEYVAULT }} --object-id $msi --secret-permissions get
-          curl -s https://toolkit.fluxcd.io/install.sh | bash
+          curl -s https://fluxcd.io/install.sh | bash
           flux bootstrap github --owner=${{ env.GITHUB_OWNER }} --repository=${{ env.REPO }} --branch=main --path=demo-cluster --personal
